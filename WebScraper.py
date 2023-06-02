@@ -6,6 +6,14 @@ import time
 
 
 """
+TODO:
+
+Implement filters in url retrieved i.e. model name, price etc
+
+Maybe implement a GUI for specifying filters
+
+Think of a name..
+
 Add functionality for multiple websites:
 AutoTrader
 Motors
@@ -18,7 +26,26 @@ CarSupermarket
 BigMotoringWorld
 """
 
-url = "https://www.autotrader.co.uk/car-search?postcode=SW1A 0AA"
+def buildUrl(filters):
+    url = "https://www.autotrader.co.uk/car-search?"
+    for item in filters:
+        url += item + "&"
+    postcode = "SW1A 0AA"
+    #?make=<makeName>
+    #?model=<modelName>
+    #&price-from
+    #&price-to
+    #&year-from
+    #&year-to
+    #minimum-mileage
+    #maximum-mileage
+    #transmission
+    #fuel-type
+    #insuranceGroup=03U...50U
+    #exclude-writeoff-categories=on
+    return url
+
+url = buildUrl(["postcode=TW119RJ", "price-to=4500", "maximum-mileage=60000", "transmission=Manual", "fuel-type=Petrol", "insuranceGroup=05U", "exclude-writeoff-categories=on", "year-from=2011"])
 
 #Setup driver
 driver = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver")
@@ -27,6 +54,8 @@ driver.get(url)
 driver.maximize_window()
 time.sleep(3)
 pageNum = 1
+
+
 
 while driver.find_element(By.XPATH, "//a[@direction='next']").get_attribute("data-testid") != "pagination-disabled":
     carPrice = driver.find_elements(By.XPATH, "//div[@data-testid='advertCard']/div/div/section/section/div/p/span/span")
