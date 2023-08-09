@@ -38,22 +38,29 @@ BigMotoringWorld
 """
 
 def getAutoTraderCars():
+    #accepts the cookies popup
+    driver.switch_to.frame(driver.find_element(By.XPATH, "/html/body/div[3]/iframe"))
+    driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div[3]/div[2]/button[2]").click()
+    pageNum = 1
     while True:
-        carPrice = driver.find_elements(By.XPATH, "//div[@data-testid='advertCard']/div/div/section/section/div/p/span/span")
-        carModel = driver.find_elements(By.XPATH, "//a[@data-testid='search-listing-title']/h3")
-        carMileage = driver.find_elements(By.XPATH, "//div[@data-testid='advertCard']/div/div/section/section/ul/li[3]")
+        #driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
+        carPrices = driver.find_elements(By.XPATH, "//div[@data-testid='advertCard']/div/div/section/section/div/p/span/span")
+        carModels = driver.find_elements(By.XPATH, "//a[@data-testid='search-listing-title']/h3")
+        carMileages = driver.find_elements(By.XPATH, "//div[@data-testid='advertCard']/div/div/section/section/ul/li[3]")
         adUrl = driver.find_elements(By.XPATH, "//a[@data-testid='search-listing-title']")
         regYear = driver.find_elements(By.XPATH, "//ul[@data-testid='search-listing-specs']/li[1]")
-        zipTest = list(zip(carPrice, carModel, carMileage))
         print(f"------------------ PAGE NUMBER: {pageNum} ---------------")
-        for price, model, mileage, url, regYear in zip(carPrice, carModel, carMileage, adUrl, regYear):
+        for price, model, mileage, url, regYear in zip(carPrices, carModels, carMileages, adUrl, regYear):
             print(f"Found a {model.text} which costs {price.text} with a mileage of {mileage.text[:-6]} registered in {regYear.text[:-9]}")
             carAds.write(f"{model.text}, {price.text.replace(',', '').replace('£','')}, {url.get_attribute('href')}, {mileage.text.replace(',','')[:-6]}, {regYear.text[:-9]}\n")
-        driver.find_element(By.XPATH, "//main[@id='content']/article/div[2]/div[2]/a[@direction='next']").click()
-        time.sleep(3)
-        pageNum += 1
-        if len(driver.find_elements(By.XPATH, "//a[@direction='next']")) == 0:
+        if len(driver.find_elements(By.XPATH, "//*[@data-testid='pagination-next']")) == 0:
             break
+        nextLinkXPath = "//*[@data-testid='pagination-next']"
+        test = driver.find_element(By.XPATH, nextLinkXPath)
+        time.sleep(5)
+        test.click()
+        pageNum += 1
 
 def getNumberPlate():
     pytesseract.pytesseract.tesseract_cmd = 'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -132,8 +139,8 @@ carAds = open("F:\carAds.csv", "w")
 carAds.truncate(0)
 carAds.write("Car brand + mode, car price, url, car mileage, registration year\n")
 
-#getAutoTraderCars()
-getNumberPlate()
+getAutoTraderCars() 
+#getNumberPlate()
 
 
     
