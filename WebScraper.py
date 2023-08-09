@@ -8,6 +8,8 @@ import cv2
 import imutils
 import pytesseract
 
+import URL
+
 
 """
 TODO:
@@ -57,9 +59,8 @@ def getAutoTraderCars():
         if len(driver.find_elements(By.XPATH, "//*[@data-testid='pagination-next']")) == 0:
             break
         nextLinkXPath = "//*[@data-testid='pagination-next']"
-        test = driver.find_element(By.XPATH, nextLinkXPath)
-        time.sleep(5)
-        test.click()
+        time.sleep(3)
+        driver.find_element(By.XPATH, nextLinkXPath).click()
         pageNum += 1
 
 def getNumberPlate():
@@ -110,8 +111,6 @@ def buildUrl(filters):
     url = "https://www.autotrader.co.uk/car-search?"
     for item in filters:
         url += item + "&"
-    postcode = "SW1A 0AA"
-    url += postcode
     #?make=<makeName>
     #?model=<modelName>
     #&price-from
@@ -124,9 +123,9 @@ def buildUrl(filters):
     #fuel-type
     #insuranceGroup=03U...50U
     #exclude-writeoff-categories=on
-    return url
+    return url + "sort=price-asc"
 
-url = buildUrl(["postcode=TW119RJ", "price-to=5000", "maximum-mileage=60000", "transmission=Manual", "fuel-type=Petrol", "insuranceGroup=10U", "exclude-writeoff-categories=on", "year-from=2011"])
+url = buildUrl(["make=Renault", "model=Kadjar", "postcode=TW119RJ","maximum-mileage=80000","exclude-writeoff-categories=on","year-from=2016", "radius=50"])
 
 #Setup driver
 driver = webdriver.Chrome("/usr/lib/chromium-browser/chromedriver")
@@ -135,7 +134,7 @@ driver.get(url)
 driver.maximize_window()
 time.sleep(3)
 pageNum = 1
-carAds = open("F:\carAds.csv", "w")
+carAds = open("F:\RenaultKadjar2016.csv", "w")
 carAds.truncate(0)
 carAds.write("Car brand + mode, car price, url, car mileage, registration year\n")
 
